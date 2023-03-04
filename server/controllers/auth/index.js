@@ -5,8 +5,7 @@ const coreService = require("../../services");
 const redisClient = require('../../commons/redis')
 
 async function generateNewToken(user) {
-  const encUserEmail = coreService.encryptData(user?.email)
-  await redisClient.set('loggedIn_' + encUserEmail, user?.email)
+  await redisClient.set('loggedIn_' + user?.email, user?.email)
 
   // sid generation
   const {encSid, plainSid} = coreService.sidGeneration(user?.email)
@@ -16,7 +15,7 @@ async function generateNewToken(user) {
   })
   
   const jwtPayload = {
-    id: user?.id, email: user?.email, encSid: encSid, encUserEmail: encUserEmail
+    id: user?.id, email: user?.email, encSid: encSid
   }
   const token = await tokenSigning(jwtPayload);
   const returnedData = {
@@ -38,7 +37,7 @@ const signIn = async (req, res) => {
 
   // jwt sign
   try {
-    const loggedInOne = await redisClient.get('loggedIn_' + req?.user?.encUserEmail)
+    const loggedInOne = await redisClient.get('loggedIn_' + user?.email)
     if (loggedInOne) {
       console.log("loggedInOne signIn:error");
       return sendErrorMsg(res, {
@@ -88,7 +87,7 @@ const signUp = async (req, res) => {
 };
 
 const logout = async (req, res) => {
-  const loggedInOne = await redisClient.get('loggedIn_' + req?.user?.encUserEmail)
+  const loggedInOne = await redisClient.get('loggedIn_' + req?.user?.email)
   if (!loggedInOne) {
     console.log("loggedInOne logout:error");
     return sendErrorMsg(res, {
@@ -105,7 +104,7 @@ const logout = async (req, res) => {
     });
   }
 
-  await redisClient.del('loggedIn_' + req?.user?.encUserEmaill)
+  await redisClient.del('loggedIn_' + req?.user?.email)
   await redisClient.del('sid_' + req?.user?.sid)
   return sendSuccessMsg(res, {
     msg: "logout successfully",
@@ -114,7 +113,7 @@ const logout = async (req, res) => {
 }
 
 const retrieveNewToken = async (req, res) => {
-  const loggedInOne = await redisClient.get('loggedIn_' + req?.user?.encUserEmail)
+  const loggedInOne = await redisClient.get('loggedIn_' + req?.user?.email)
   if (!loggedInOne) {
     console.log("loggedInOne retrieveNewToken:error");
     return sendErrorMsg(res, {
@@ -131,7 +130,7 @@ const retrieveNewToken = async (req, res) => {
     });
   }
 
-  await redisClient.del('loggedIn_' + req?.user?.encUserEmaill)
+  await redisClient.del('loggedIn_' + req?.user?.email)
   await redisClient.del('sid_' + req?.user?.sid)
 
   const returnedData = await generateNewToken(req?.user)

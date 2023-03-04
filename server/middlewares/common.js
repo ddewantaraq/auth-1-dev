@@ -19,12 +19,11 @@ async function validateToken(req, res, next) {
     let decodedToken = null
     if (req?.decodeOnly) {
       decodedToken = await decodeToken(token)
-      delete req?.decodeOnly
     } else {
       decodedToken = await verifyToken(token)
     }
     if (!decodedToken) {
-      console.log(e, ' userValidator:decodedToken error')
+      console.log('userValidator:decodedToken error')
       return sendErrorMsg(res, { msg: "Unauthorized", error: 'Unauthorized' }, {errorCode: 401});
     }
 
@@ -65,7 +64,7 @@ const userValidator = async (req, res, next) => {
 }
 
 const tokenDecoder = async (req, res, next) => {
-  req?.decodeOnly = true
+  req.decodeOnly = true
   return await validateToken(req, res, next);
 }
 

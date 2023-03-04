@@ -36,15 +36,8 @@ const verifyToken = (token) => {
 
 const decodeToken = (token) => {
   return new Promise((resolve, reject) => {
-    jwt.decode(token, {complete: true},
-      (err, authData) => {
-        if (err) {
-          return reject(err)
-        }
-
-        return resolve(authData)
-      }
-    );
+    const result = jwt.decode(token, { complete: true });
+    return resolve(result)
   });
 };
 
