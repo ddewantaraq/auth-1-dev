@@ -15,9 +15,11 @@
     "sequelize": "^6.28.0"
   },
   "scripts": {
-    "run:dev": "nodemon --watch"
+    "run:dev": "nodemon --watch",
+    "run:test": "jest --watch"
   },
   "devDependencies": {
+    "jest": "^29.4.3",
     "nodemon": "^2.0.20",
     "sequelize-cli": "^6.5.2"
   }
